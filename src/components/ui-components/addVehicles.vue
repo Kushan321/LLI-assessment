@@ -30,8 +30,45 @@
       </div>
       <v-row no-gutters justify="center">
         <v-col cols="12" md="12">
-          <div class="drop-box-area">
+          <div class="drop-box-wrap">
             <p>Vehicle Images</p>
+            <div class="uploaded-files">
+              <div
+                v-for="(file, index) in uploadedFiles"
+                :key="index"
+                class="uploaded-file"
+              >
+                <span>{{ file.name }}</span>
+                <v-icon @click="removeUploadedFile(index)">mdi-close</v-icon>
+              </div>
+            </div>
+            <!-- Add a drop-zone for file drag and drop -->
+            <div class="drop-box-area" @drop="handleFileDrop" @dragover.prevent>
+              <div class="drop-box">
+                <v-btn @click="openFileInput" class="mb-5">
+                  <v-icon>mdi-upload</v-icon>
+                </v-btn>
+
+                <p class="drop-text">Drop files here or click to upload</p>
+                <p class="drop-text-2">
+                  Upload upto five images of the vehicle.<span>JPG</span> and
+                  <span>PNG</span> format Supported
+                </p>
+
+                <input
+                  type="file"
+                  multiple
+                  style="display: none"
+                  ref="fileInput"
+                  @change="handleFileUpload"
+                />
+              </div>
+              <progress
+                v-if="progress > 0 && progress < 100"
+                :value="progress"
+                max="100"
+              ></progress>
+            </div>
           </div>
           <v-row no-gutters justify="center">
             <v-col cols="12" sm="4">
@@ -414,6 +451,8 @@ export default {
   },
   data() {
     return {
+      progress: 0, // Initialize progress to 0
+      uploadedFiles: [], // Keep track of uploaded files
       files: [],
       submitionStatus: null,
       STNKAnnualExpiry: false,
@@ -459,6 +498,7 @@ export default {
         plase_purchsed: "",
         no_range: "",
         features: "",
+        drag_drop: "",
       },
     };
   },
@@ -529,6 +569,84 @@ export default {
     removeSTNK(index) {
       this.formData.stnk.splice(index, 1);
     },
+    handleFileDrop(event) {
+      event.preventDefault();
+
+      if (this.uploadedFiles.length + event.dataTransfer.files.length > 5) {
+        // Check if the total number of files exceeds the maximum allowed (5 in your case)
+        alert("You can only upload a maximum of 5 files.");
+        return;
+      }
+
+      // Iterate through dropped  and add them to uploadedFiles
+      const droppedFiles = event.dataTransfer.files;
+      for (let i = 0; i < droppedFiles.length; i++) {
+        const file = droppedFiles[i];
+
+        // Add the file to the uploadedFiles array
+        this.uploadedFiles.push(file);
+        this.uploadFile(file);
+      }
+
+      // Update the display to show all added files
+      this.formData.drag_drop = this.uploadedFiles
+        .map((file) => file.name)
+        .join(", "); // Display all file names separated by a comma
+    },
+    async uploadFile(file) {
+      const apiUrl = "https://example.com/api/upload-file";
+
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await axios.post(apiUrl, formData, {
+          onUploadProgress: (progressEvent) => {
+            this.progress = Math.round(
+              (progressEvent.loaded / progressEvent.total) * 100
+            );
+          },
+        });
+
+        // Handle successful upload here if needed
+        console.log("File uploaded successfully:", response.data);
+      } catch (error) {
+        // Handle upload error here
+        console.error("Error uploading file:", error);
+      }
+    },
+    handleFileUpload(event) {
+      if (this.uploadedFiles.length + event.target.files.length > 5) {
+        // Check if the total number of files exceeds the maximum allowed (5 in your case)
+        alert("You can only upload a maximum of 5 files.");
+        return;
+      }
+
+      // Iterate through the selected files and add them to uploadedFiles
+      for (let i = 0; i < event.target.files.length; i++) {
+        const file = event.target.files[i];
+
+        // Add the file to the uploadedFiles array
+        this.uploadedFiles.push(file);
+      }
+
+      // Update the display to show all added files
+      this.formData.drag_drop = this.uploadedFiles
+        .map((file) => file.name)
+        .join(", "); // Display all file names separated by a comma
+    },
+    openFileInput() {
+      this.$refs.fileInput.click();
+    },
+    removeUploadedFile(index) {
+      // Remove the file from uploadedFiles
+      this.uploadedFiles.splice(index, 1);
+
+      // Update formData.drag_drop to remove the deleted file
+      this.formData.drag_drop = this.uploadedFiles
+        .map((file) => file.name)
+        .join(", ");
+    },
   },
 };
 </script>
@@ -554,11 +672,30 @@ export default {
       cursor: pointer;
     }
   }
-  .drop-box-area {
-    p {
-      font-weight: 500;
+  .drop-box-wrap {
+    .drop-box-area {
+      border: 2px dashed #ccc;
+      padding: 50px;
+      margin-bottom: 20px;
+      text-align: center;
+      .drop-box {
+        display: inline-block;
+        text-align: center;
+        .drop-text {
+          font-size: 20px;
+          font-weight: 500;
+          color: rgb(74, 74, 74);
+        }
+        .drop-text-2 {
+          font-size: 16px;
+          span {
+            font-weight: 500;
+          }
+        }
+      }
     }
   }
+
   .title-text {
     font-weight: 500;
     margin-bottom: 5px;

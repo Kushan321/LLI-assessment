@@ -1,11 +1,15 @@
 "use strict";
 import store from "@/store";
-// import router from "@/router";
+import router from "@/router";
+/* eslint-disable */
 let authPlugin = {
   install() {
-    if (!store.state.isLoggedIn) {
-      console.log("triggerd!");
-      // router.push("/");
+    if ($cookies.isKey("token")) {
+      store.commit("setLoginState", true);
+      router.push("/vehicle-management/vehicles");
+    } else {
+      console.log("user not loggedIn!");
+      router.push("/");
     }
   },
 };

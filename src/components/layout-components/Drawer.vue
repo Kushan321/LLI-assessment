@@ -1,90 +1,82 @@
 <template>
-  <v-app>
-    <v-app-bar app class="d-lg-none">
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-    </v-app-bar>
-    <v-card height="100%" class="drawer-wrap">
-      <v-navigation-drawer
-        v-model="drawer"
-        absolute
-        :permanent="$vuetify.breakpoint.mdAndUp"
-        left
-      >
-        <template v-slot:prepend>
-          <!-- Hooper Slider -->
-          <Hooper
-            :slidesToShow="1"
-            :loop="false"
-            :autoplay="true"
-            :centerMode="true"
-            :interval="2000"
-          >
-            <Slide>
-              <!-- Content for Slide 1 -->
-              <div class="slide-content">
-                <img src="../../assets/images/bike1.png" />
-              </div>
-            </Slide>
+  <v-card height="100%" class="drawer-wrap">
+    <!-- <v-btn @click.stop="drawer = !drawer" color="primary" style="z-index: 10;">click me</v-btn> -->
+    <v-navigation-drawer
+      v-model="drawer"
+      absolute
+      :permanent="$vuetify.breakpoint.mdAndUp"
+      left
+    >
+      <template v-slot:prepend>
+        <!-- Hooper Slider -->
+        <Hooper
+          :slidesToShow="1"
+          :loop="false"
+          :auto-play="true"
+          :centerMode="true"
+          :interval="8000"
+        >
+          <Slide>
+            <!-- Content for Slide 1 -->
+            <div class="slide-content">
+              <img src="../../assets/images/bike1.png" />
+            </div>
+          </Slide>
 
-            <Slide>
-              <div class="slide-content">
-                <img src="../../assets/images/bike1.png" />
-              </div>
-            </Slide>
+          <Slide>
+            <div class="slide-content">
+              <img src="../../assets/images/bike1.png" />
+            </div>
+          </Slide>
 
-            <Slide>
-              <div class="slide-content">
-                <img src="../../assets/images/bike1.png" />
-              </div>
-            </Slide>
-            <hooper-pagination slot="hooper-addons"></hooper-pagination>
-          </Hooper>
-        </template>
+          <Slide>
+            <div class="slide-content">
+              <img src="../../assets/images/bike1.png" />
+            </div>
+          </Slide>
+          <hooper-pagination slot="hooper-addons"></hooper-pagination>
+        </Hooper>
+      </template>
 
-        <v-divider></v-divider>
+      <v-divider></v-divider>
 
-        <v-list dense>
-          <div v-for="item in items" :key="item.title">
-            <v-list-item
-              @click="toggleSubitems(item)"
-              :to="item.to || null"
-              link
-            >
-              <v-list-item-action>
-                <v-icon>{{ item.icon }}</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title>{{ item.title }}</v-list-item-title>
-              </v-list-item-content>
-              <v-list-item-action v-if="item.subitems">
-                <v-icon>
-                  {{ item.expanded ? "mdi-chevron-up" : "mdi-chevron-down" }}
-                </v-icon>
-              </v-list-item-action>
-            </v-list-item>
+      <v-list dense>
+        <div v-for="item in items" :key="item.title">
+          <v-list-item @click="toggleSubitems(item)" :to="item.to || null" link>
+            <v-list-item-action>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action v-if="item.subitems">
+              <v-icon>
+                {{ item.expanded ? "mdi-chevron-up" : "mdi-chevron-down" }}
+              </v-icon>
+            </v-list-item-action>
+          </v-list-item>
 
-            <!-- Display subitems if they exist and item is expanded -->
-            <v-list v-if="item.subitems && item.expanded">
-              <div v-for="subitem in item.subitems" :key="subitem.title">
-                <v-list-item
-                  :to="subitem.to"
-                  link
-                  @click="closeDrawerAndNavigate(item)"
-                >
-                  <v-list-item-action>
-                    <v-icon>mdi-circle-small</v-icon>
-                  </v-list-item-action>
-                  <v-list-item-content>
-                    <v-list-item-title>{{ subitem.title }}</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </div>
-            </v-list>
-          </div>
-        </v-list>
-      </v-navigation-drawer>
-    </v-card>
-  </v-app>
+          <!-- Display subitems if they exist and item is expanded -->
+          <v-list v-if="item.subitems && item.expanded">
+            <div v-for="subitem in item.subitems" :key="subitem.title">
+              <v-list-item
+                :to="subitem.to"
+                link
+                @click="closeDrawerAndNavigate(item)"
+              >
+                <v-list-item-action>
+                  <v-icon>mdi-circle-small</v-icon>
+                </v-list-item-action>
+                <v-list-item-content>
+                  <v-list-item-title>{{ subitem.title }}</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </div>
+          </v-list>
+        </div>
+      </v-list>
+    </v-navigation-drawer>
+  </v-card>
 </template>
 
 <script>
@@ -205,6 +197,9 @@ export default {
         item.expanded = !item.expanded;
       }
     },
+    toggle() {
+      this.drawer = !this.drawer;
+    },
     closeDrawerAndNavigate(item) {
       this.drawer = false;
 
@@ -218,6 +213,11 @@ export default {
 
 <style lang="scss">
 .drawer-wrap {
+  position: relative;
+  @media (max-width: 958.98px) {
+    position: absolute;
+    width: 100%;
+  }
   .v-navigation-drawer {
     width: 100% !important;
     .v-list-item.v-list-item--active {

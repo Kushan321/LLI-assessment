@@ -19,6 +19,17 @@ export default {
     ShowVehicles,
     AddVehicles,
   },
+
+  computed: {
+    getVehicles(){
+      return this.$store.state.vehicles;
+    }
+  },
+
+  mounted() {
+    this.$store.dispatch("getAllVehicles");
+    this.$store.dispatch("getVehicleById", "vehi-id");
+  },
 };
 </script>
 <style lang="scss">
