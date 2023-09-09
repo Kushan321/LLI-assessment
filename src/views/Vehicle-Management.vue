@@ -1,6 +1,6 @@
 <template>
   <div class="vehicle-management elevation-1">
-    <ShowVehicles v-if="this.$route.path == '/vehicle-management/vehicles'" />
+    <ShowVehicles :dataarray="getVehicles" v-if="this.$route.path == '/vehicle-management/vehicles'" />
     <AddVehicles
       v-if="this.$route.path == '/vehicle-management/add-vehicles'"
     />

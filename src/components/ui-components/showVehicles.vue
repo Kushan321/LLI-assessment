@@ -19,7 +19,7 @@
 
     <v-data-table
       :headers="headers"
-      :items="data"
+      :items="dataarray"
       :search="search"
       :page.sync="page"
       :items-per-page.sync="itemsPerPage"
@@ -112,6 +112,12 @@
 
 <script>
 export default {
+  props: {
+    dataarray: {
+      type: Array,
+      default: () => [],
+    },
+  },
   data() {
     return {
       detailsDialog: false,

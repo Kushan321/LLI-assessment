@@ -26,6 +26,7 @@ export default {
   },
   methods: {
     signOut() {
+      this.$store.dispatch("logOut");
       alert("Signing out...");
       this.showDialog = false; // Close the dialog after signing out
     },
